@@ -1,5 +1,6 @@
 // TCP server version 1
 //
+var readline = require('readline');
 var net = require('net');
 var fs = require("fs");
 var HOST = '127.0.0.1';
@@ -35,13 +36,15 @@ net.createServer(function(sock) {
         sock.write("ack2");
       }
       
-      else if(ackCnt>1){
+      else if(ackCnt > 1){
         rec=new Buffer(data);
         receivedSize = receivedSize + parseInt(data.length);
-        console.log(Math.floor(receivedSize/dataSize).toString());
         counter++; 
-        console.log('get ' + counter+' times.');
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0, null);
+        console.log('data get :' + counter+' times. file get : '+Math.floor(receivedSize*100/dataSize).toString()+"%");
         fs.appendFileSync(out_filename, rec);
+
       }
 
       if(receivedSize == dataSize){

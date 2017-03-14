@@ -1,11 +1,11 @@
 
 var net=require('net');
 var fs = require("fs");
-var HOST = '127.0.0.1';
+var HOST = process.argv[2];
 var PORT = 6969;
-var dataName = "test.jpeg";
-var indata = fs.readFileSync('./'+dataName);
-var dataSize = indata.length;
+var dataName = process.argv[3];
+var indata = fs.createReadStream('./'+dataName);
+var dataSize = fs.statSync(dataName).size;
 var client = new net.Socket();
 
 console.log(dataSize.toString());
@@ -21,7 +21,9 @@ client.on('data', function(data) {
 }
 if(data=="ack2"){
     console.log("get ack2");
-    client.write(indata);
+    indata.on('data',function(chunk) {
+      client.write(chunk);
+    });
 }
 
 if(data=="finishack"){
